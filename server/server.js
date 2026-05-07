@@ -29,22 +29,22 @@ app.use(helmet());
 // ─── CORS Configuration ──────────────────────────────────────────
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:3000",
+  "https://task-manager-neon-eta.vercel.app",
   process.env.CLIENT_URL,
-];
+].filter(Boolean); // removes undefined if CLIENT_URL is not set
 
 app.use(
   cors({
     origin: function (origin, callback) {
       // allow requests with no origin
-      // like mobile apps / postman
+      // like mobile apps / postman / curl
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(
-          new Error("Not allowed by CORS")
-        );
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -61,9 +61,7 @@ app.use(
 );
 
 // ─── Logging ─────────────────────────────────────────────────────
-if (
-  process.env.NODE_ENV === "development"
-) {
+if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
@@ -82,10 +80,7 @@ app.use("/api/projects", projectRoutes);
 
 app.use("/api/tasks", taskRoutes);
 
-app.use(
-  "/api/dashboard",
-  dashboardRoutes
-);
+app.use("/api/dashboard", dashboardRoutes);
 
 // ─── Root Route ──────────────────────────────────────────────────
 app.get("/", (req, res) => {

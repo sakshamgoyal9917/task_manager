@@ -1,21 +1,19 @@
 import axios from "axios";
 
-// Base instance — all API calls use this
+const BASE_URL = "https://taskmanager-production-61ca.up.railway.app/api";
+
 const api = axios.create({
-  baseURL: "/api",          // uses vite proxy in dev
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ─── Request Interceptor ──────────────────────────────────────────
-// Runs before every request is sent
+// Request Interceptor
 api.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
     const token = localStorage.getItem("token");
 
-    // If token exists, attach to Authorization header
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,20 +23,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ─── Response Interceptor ─────────────────────────────────────────
-// Runs on every response
+// Response Interceptor
 api.interceptors.response.use(
-  // Success — just return response
   (response) => response,
 
-  // Error — handle globally
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid — clear storage and redirect
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      localStorage.clear();
+
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
+
     return Promise.reject(error);
   }
 );

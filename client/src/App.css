@@ -1,0 +1,12 @@
+/* App.css — TaskFlow */
+/* All main styles live in index.css */
+/* This file is intentionally minimal */
+
+/* Mobile sidebar fix */
+@media (min-width: 768px) {
+  .sidebar-wrapper {
+    position: relative !important;
+    transform: none !important;
+    z-index: auto !important;
+  }
+}
